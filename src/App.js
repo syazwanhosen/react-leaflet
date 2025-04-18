@@ -86,7 +86,7 @@ const HospitalMap = () => {
 
       {/* Map */}
       <div className="w-[70%] h-full">
-        <MapContainer center={[40.81, -73.96]} zoom={13} scrollWheelZoom={false} className="h-full w-full z-0">
+        <MapContainer center={[40.81, -73.96]} zoom={13} className="h-full w-full z-0">
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
