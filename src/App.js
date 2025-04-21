@@ -50,6 +50,8 @@ const hospitals = [
   }
 ];
 
+const accessToken = "zt7wt1ZXSBmlye8q8IQ6HuOv6p4idsbIbLl3Qi2ns2X4ZcbQbarIZpGE6YAkfi6L"
+
 const HospitalMap = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
@@ -107,7 +109,8 @@ const HospitalMap = () => {
           className="h-full w-full z-0"
         >
           <TileLayer
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            url={`https://tile.jawg.io/jawg-sunny/{z}/{x}/{y}{r}.png?access-token=${accessToken}`}
+            attribution='<a href="https://jawg.io" title="Tiles Courtesy of Jawg Maps" target="_blank">&copy; <b>Jawg</b>Maps</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           />
           {hospitals.map((h, i) => (
             <Marker key={i} position={h.location} icon={hospitalIcon}>
