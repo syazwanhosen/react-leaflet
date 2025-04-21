@@ -16,7 +16,7 @@ const hospitals = [
     name: "Monroe Regional Hospital",
     rating: 4.2,
     distance: "1.6 mi",
-    price: 1374,
+    price: 2457,
     priceType: "Fixed",
     location: [40.8106, -73.955],
     address: "400 S Chestnut St, Aberdeen, MS 39730, USA"
@@ -24,7 +24,7 @@ const hospitals = [
   {
     name: "Sharp Memorial",
     rating: 3.9,
-    distance: "1.8 mi",
+    distance: "2.5 mi",
     price: 1976,
     priceType: "Fixed",
     location: [40.813, -73.97],
@@ -34,7 +34,7 @@ const hospitals = [
     name: "Riverview Medical Center",
     rating: 4.1,
     distance: "2.3 mi",
-    price: 2457,
+    price: 3291,
     priceType: "Negotiated",
     location: [40.817, -73.98],
     address: "400 S Chestnut St, Aberdeen, MS 39730, USA"
@@ -42,8 +42,8 @@ const hospitals = [
   {
     name: "Bayshore Community Hospital",
     rating: 4.0,
-    distance: "2.5 mi",
-    price: 3291,
+    distance: "1.8 mi",
+    price: 1374,
     priceType: "Fixed",
     location: [40.819, -73.99],
     address: "400 S Chestnut St, Aberdeen, MS 39730, USA"
@@ -68,6 +68,23 @@ const ResizeHandler = ({ sidebarOpen }) => {
 
 const HospitalMap = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sortOption, setSortOption] = useState("lowestPrice");
+  const [sortedHospitals, setSortedHospitals] = useState([]);
+
+  useEffect(() => {
+    const sorted = [...hospitals].sort((a, b) => {
+      if (sortOption === "lowestPrice") {
+        return a.price - b.price;
+      } else if (sortOption === "shortestDistance") {
+        const distA = parseFloat(a.distance);
+        const distB = parseFloat(b.distance);
+        return distA - distB;
+      }
+      return 0;
+    });
+    setSortedHospitals(sorted);
+  }, [sortOption]);
+
 
   return (
     <div className="relative flex rounded-xl overflow-hidden border border-purple-200 shadow-md h-[90vh] w-full max-w-screen-2xl mx-auto mt-10">
@@ -98,12 +115,18 @@ const HospitalMap = () => {
         <div className="p-4 overflow-y-auto h-full">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-semibold">32 Results</h2>
-            <button className="border border-gray-300 px-3 py-1 rounded-md text-sm">
-              Lowest Price
-            </button>
+            <select
+              value={sortOption}
+              onChange={(e) => setSortOption(e.target.value)}
+              className="border border-gray-300 px-3 py-1 rounded-md text-sm"
+            >
+              <option value="lowestPrice">Lowest Price</option>
+              <option value="shortestDistance">Shortest Distance</option>
+            </select>
           </div>
 
-          {hospitals.map((hospital, idx) => (
+
+          {sortedHospitals.map((hospital, idx) => (
             <div key={idx} className="mb-4 border-b pb-4">
               <h3 className="text-lg font-semibold">{hospital.name}</h3>
               <div className="flex items-center text-sm text-gray-600">
@@ -140,7 +163,7 @@ const HospitalMap = () => {
             url={`https://tile.jawg.io/jawg-sunny/{z}/{x}/{y}{r}.png?access-token=${accessToken}`}
             attribution='<a href="https://jawg.io" title="Tiles Courtesy of Jawg Maps" target="_blank">&copy; <b>Jawg</b>Maps</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           />
-          {hospitals.map((h, i) => (
+          {sortedHospitals.map((h, i) => (
             <Marker key={i} position={h.location} icon={hospitalIcon}>
               <Popup>{h.name}</Popup>
             </Marker>
