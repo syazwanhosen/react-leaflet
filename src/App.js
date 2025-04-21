@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { useState, useEffect } from "react";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import { Icon } from 'leaflet';
 import hospital from './hospital.png';
 import "leaflet/dist/leaflet.css";
@@ -52,22 +52,49 @@ const hospitals = [
 
 const accessToken = "zt7wt1ZXSBmlye8q8IQ6HuOv6p4idsbIbLl3Qi2ns2X4ZcbQbarIZpGE6YAkfi6L"
 
+const ResizeHandler = ({ sidebarOpen }) => {
+  const map = useMap();
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      map.invalidateSize({ animate: true });
+    }, 500); // Smooth transition delay to match CSS
+
+    return () => clearTimeout(timeout);
+  }, [sidebarOpen, map]);
+
+  return null;
+};
+
 const HospitalMap = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   return (
     <div className="relative flex rounded-xl overflow-hidden border border-purple-200 shadow-md h-[90vh] w-full max-w-screen-2xl mx-auto mt-10">
 
-      {/* Toggle Button (top left corner) */}
+
       <button
         onClick={() => setSidebarOpen(!sidebarOpen)}
-        className={`absolute z-20 top-4 ${sidebarOpen ? 'left-[30%]' : 'left-4'} bg-white border border-gray-300 rounded-full p-2 shadow-md hover:bg-gray-100 transition-all`}
+        className={`absolute z-20 top-4 h-12 w-10 flex items-center justify-center bg-white shadow-sm transition-all duration-300 ${sidebarOpen ? 'left-[calc(31%-16px)]' : 'left-0'
+          } rounded-tr-lg rounded-br-lg`}
       >
-        <span className="text-lg">{sidebarOpen ? '←' : '→'}</span>
+        <svg
+          className={`w-5 h-5 text-gray-600 transition-transform duration-300 ${!sidebarOpen ? 'rotate-180' : ''
+            }`}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          viewBox="0 0 24 24"
+        >
+          <path d="M15 19l-7-7 7-7" />
+        </svg>
       </button>
 
+
+
+
       {/* Sidebar */}
-      <div className={`${sidebarOpen ? "w-[30%]" : "w-0"} transition-all duration-300 overflow-hidden bg-white`}>
+      <div className={`${sidebarOpen ? "w-[30%]" : "w-0"} transition-all duration-500 ease-in-out overflow-hidden bg-white`}>
         <div className="p-4 overflow-y-auto h-full">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-semibold">32 Results</h2>
@@ -101,13 +128,14 @@ const HospitalMap = () => {
       </div>
 
       {/* Map */}
-      <div className={`${sidebarOpen ? "w-[70%]" : "w-full"} transition-all duration-300 h-full`}>
+      <div className={`${sidebarOpen ? "w-[70%]" : "w-full"} transition-all duration-500 ease-in-out h-full`}>
         <MapContainer
           center={[40.81, -73.96]}
           zoom={13}
-          zoomControl={false} // remove zoom control
+          zoomControl={false}
           className="h-full w-full z-0"
         >
+          <ResizeHandler sidebarOpen={sidebarOpen} />
           <TileLayer
             url={`https://tile.jawg.io/jawg-sunny/{z}/{x}/{y}{r}.png?access-token=${accessToken}`}
             attribution='<a href="https://jawg.io" title="Tiles Courtesy of Jawg Maps" target="_blank">&copy; <b>Jawg</b>Maps</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -118,6 +146,7 @@ const HospitalMap = () => {
             </Marker>
           ))}
         </MapContainer>
+
       </div>
     </div>
   );
